@@ -6,28 +6,21 @@ using Microsoft.Extensions.Options;
 
 namespace InvocationContext
 {
-    public class BaseInvocationContext<TInvocationContextData, TInvocationContextOptions>
+    public class BaseInvocationContext<TInvocationContextOptions> : IInvocationContext 
         where TInvocationContextOptions : BaseInvocationContextOptions, new()
-        where TInvocationContextData : InvocationContextData, new()
     {
+        private readonly IInvocationContextDataManager _dataManager;
         private readonly ILogger? _logger;
         private readonly TInvocationContextOptions _defaultOptions;
 
         public bool Working { get; private set; }
 
-        public BaseInvocationContext(IOptions<TInvocationContextOptions>? defaultOptions, ILogger? logger)
+        public BaseInvocationContext(IInvocationContextDataManager dataManager, 
+            IOptions<TInvocationContextOptions>? defaultOptions, ILogger<BaseInvocationContext<TInvocationContextOptions>>? logger)
         {
+            _dataManager = dataManager;
             _logger = logger;
             _defaultOptions = defaultOptions?.Value ?? new TInvocationContextOptions();
-        }
-
-        protected virtual TInvocationContextData InitializeContext()
-        {
-            return new TInvocationContextData();
-        }
-
-        protected virtual void FinallizeContext(TInvocationContextData data)
-        {
         }
 
         public virtual async Task InvokeAsync(Action<BaseInvocationContextOptions>? optionsAction,
@@ -36,7 +29,7 @@ namespace InvocationContext
             var options = _defaultOptions.Clone();
             optionsAction?.Invoke(options);
 
-            var contextData = InitializeContext();
+            var contextData = _dataManager.InitializeContext();
 
             Exception? exceptionOnOnActionSuccess = null;
 
@@ -105,7 +98,7 @@ namespace InvocationContext
                     }
                     finally
                     {
-                        FinallizeContext(contextData);
+                        _dataManager.FinallizeContext(contextData);
                     }
                 }
             }

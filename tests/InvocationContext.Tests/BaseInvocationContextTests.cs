@@ -11,7 +11,8 @@ namespace InvocationContext.Tests
         [Fact]
         public async Task EventsAreLaunchedWhenCallThroughInvocationContext()
         {
-            var ic = new BaseInvocationContext<InvocationContextData, BaseInvocationContextOptions>(null, null);
+            var dm = new InvocationContextDataManager();
+            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
             var executionFlag = false;
             var successFlag = false;
             var completeFlag = false;
@@ -45,7 +46,8 @@ namespace InvocationContext.Tests
         [Fact]
         public async Task ExceptionEventsIsLaunchedWhenCallThroughInvocationContext()
         {
-            var ic = new BaseInvocationContext<InvocationContextData, BaseInvocationContextOptions>(null, null);
+            var dm = new InvocationContextDataManager();
+            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
             var successFlag = false;
             var completeFlag = false;
             var actionExceptionFlag = false;
@@ -87,7 +89,8 @@ namespace InvocationContext.Tests
         [Fact]
         public async Task IfReturnFalseOnActionExceptionFuncTheInvocationNotThrowsAnyException()
         {
-            var ic = new BaseInvocationContext<InvocationContextData, BaseInvocationContextOptions>(null, null);
+            var dm = new InvocationContextDataManager();
+            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
             var actionExceptionFlag = false;
             var invocationExceptionFlag = false;
 
@@ -111,7 +114,8 @@ namespace InvocationContext.Tests
         [Fact]
         public async Task WhenOnActionSuccessThorwsExceptionItThrowThroughInvocation()
         {
-            var ic = new BaseInvocationContext<InvocationContextData, BaseInvocationContextOptions>(null, null);
+            var dm = new InvocationContextDataManager();
+            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
 
             (await Should.ThrowAsync<Exception>(async () =>
             {
@@ -125,7 +129,8 @@ namespace InvocationContext.Tests
         [Fact]
         public async Task WhenOnActionSuccessThrowsExceptionThrowsTheInvocationThrowsErrorAllwaisIncludeWhenOnActionExceptionSaysNotRethrow()
         {
-            var ic = new BaseInvocationContext<InvocationContextData, BaseInvocationContextOptions>(null, null);
+            var dm = new InvocationContextDataManager();
+            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
 
             (await Should.ThrowAsync<Exception>(async () =>
             {
@@ -143,7 +148,8 @@ namespace InvocationContext.Tests
         [Fact]
         public async Task WhenOnActionExceptionThrowsTheInvocationThrowsAnAggregateExceptionWithBothExceptionsInnerAndOutter()
         {
-            var ic = new BaseInvocationContext<InvocationContextData, BaseInvocationContextOptions>(null, null);
+            var dm = new InvocationContextDataManager();
+            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
 
             var ex = (await Should.ThrowAsync<Exception>(async () =>
             {
@@ -165,7 +171,8 @@ namespace InvocationContext.Tests
         [Fact]
         public async Task WhenOnCompleteThrowsTheInvocationThrowsTheException()
         {
-            var ic = new BaseInvocationContext<InvocationContextData, BaseInvocationContextOptions>(null, null);
+            var dm = new InvocationContextDataManager();
+            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
 
             (await Should.ThrowAsync<Exception>(async () =>
             {
