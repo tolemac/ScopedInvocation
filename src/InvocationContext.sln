@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InvocationContext", "Invoca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvocationContext.Tests", "..\tests\InvocationContext.Tests\InvocationContext.Tests.csproj", "{3CA80837-E7AB-49C2-B048-73773C6B4644}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvocationContext.EntityFrameworkCore", "InvocationContext.EntityFrameworkCore\InvocationContext.EntityFrameworkCore.csproj", "{7B2632C5-3E84-485F-9C2A-7DE373D7B726}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3CA80837-E7AB-49C2-B048-73773C6B4644}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CA80837-E7AB-49C2-B048-73773C6B4644}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CA80837-E7AB-49C2-B048-73773C6B4644}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B2632C5-3E84-485F-9C2A-7DE373D7B726}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B2632C5-3E84-485F-9C2A-7DE373D7B726}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B2632C5-3E84-485F-9C2A-7DE373D7B726}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B2632C5-3E84-485F-9C2A-7DE373D7B726}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
