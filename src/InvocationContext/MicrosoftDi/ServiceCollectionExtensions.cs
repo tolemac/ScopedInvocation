@@ -6,8 +6,7 @@ namespace InvocationContext.MicrosoftDi
     {
         public static void AddMicrosoftDiInvocationContext(this IServiceCollection sc)
         {
-            sc.AddSingleton<IInvocationContext,
-                BaseInvocationContext<BaseInvocationContextOptions>>();
+            sc.AddSingleton<IInvocationContext, InvocationContext>();
             sc.AddSingleton<IInvocationContextDataManager, MicrosoftDiInvocationContextDataManager>();
         }
     }

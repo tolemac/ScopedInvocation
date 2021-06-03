@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using InvocationContext.MicrosoftDi;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
@@ -23,7 +19,7 @@ namespace InvocationContext.Tests
             await using var sp = sc.BuildServiceProvider();
 
             var ic = sp.GetService<IInvocationContext>();
-            ic.ShouldBeOfType<BaseInvocationContext<BaseInvocationContextOptions>>();
+            ic.ShouldBeOfType<InvocationContext>();
 
             var manager = sp.GetService<IInvocationContextDataManager>();
             manager.ShouldBeOfType<MicrosoftDiInvocationContextDataManager>();

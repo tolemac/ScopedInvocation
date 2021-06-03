@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace InvocationContext
 {
-    public class BaseInvocationContext<TInvocationContextOptions> : IInvocationContext 
+    public class BaseInvocationContext<TInvocationContextOptions>  
         where TInvocationContextOptions : BaseInvocationContextOptions, new()
     {
         private readonly IInvocationContextDataManager _dataManager;
@@ -23,11 +23,11 @@ namespace InvocationContext
             _defaultOptions = defaultOptions?.Value ?? new TInvocationContextOptions();
         }
 
-        public virtual async Task InvokeAsync(Action<BaseInvocationContextOptions>? optionsAction,
+        public virtual async Task InvokeAsync(Action<TInvocationContextOptions>? optionsAction,
             Func<IServiceProvider, Task> action, CancellationToken cancellation = default)
         {
             var options = _defaultOptions.Clone();
-            optionsAction?.Invoke(options);
+            optionsAction?.Invoke((TInvocationContextOptions) options);
 
             var contextData = _dataManager.InitializeContext();
 
@@ -35,10 +35,13 @@ namespace InvocationContext
 
             try
             {
+                BeforeActionIvocation((TInvocationContextOptions) options);
                 try
                 {
                     Working = true;
                     await action.Invoke(contextData.ServiceProvider);
+                    
+                    AfterActionSuccessfulInvocation((TInvocationContextOptions)options);
 
                     if (options.OnActionSuccessAsync is not null)
                     {
@@ -56,6 +59,8 @@ namespace InvocationContext
                 }
                 catch (Exception ex)
                 {
+                    OnActionException((TInvocationContextOptions) options);
+
                     _logger?.LogError(ex, "Error on invocation context");
                     if (exceptionOnOnActionSuccess is not null)
                         throw;
@@ -110,7 +115,16 @@ namespace InvocationContext
                 }
                 throw;
             }
+        }
 
+        protected virtual void BeforeActionIvocation(TInvocationContextOptions options)
+        {
+        }
+        protected virtual void AfterActionSuccessfulInvocation(TInvocationContextOptions options)
+        {
+        }
+        protected virtual void OnActionException(TInvocationContextOptions options)
+        {
         }
     }
 }
