@@ -19,7 +19,7 @@ namespace InvocationContext.Tests
             await using var sp = sc.BuildServiceProvider();
 
             var ic = sp.GetService<IInvocationContext>();
-            ic.ShouldBeOfType<InvocationContext>();
+            ic.ShouldBeOfType<BaseInvocationContext>();
 
             var manager = sp.GetService<IInvocationContextDataManager>();
             manager.ShouldBeOfType<MicrosoftDiInvocationContextDataManager>();

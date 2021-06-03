@@ -8,6 +8,7 @@ namespace InvocationContext
     {
         bool Working { get; }
 
+        Task InvokeAsync(Func<IServiceProvider, Task> action, CancellationToken cancellation = default);
         Task InvokeAsync(Action<BaseInvocationContextOptions>? optionsAction,
             Func<IServiceProvider, Task> action, CancellationToken cancellation = default);
     }

@@ -6,6 +6,16 @@ using Microsoft.Extensions.Options;
 
 namespace InvocationContext
 {
+    public class BaseInvocationContext : BaseInvocationContext<BaseInvocationContextOptions>, IInvocationContext
+    {
+        public BaseInvocationContext(IInvocationContextDataManager dataManager,
+            IOptions<BaseInvocationContextOptions>? defaultOptions,
+            ILogger<BaseInvocationContext<BaseInvocationContextOptions>>? logger)
+            : base(dataManager, defaultOptions, logger)
+        {
+        }
+    }
+
     public class BaseInvocationContext<TInvocationContextOptions>  
         where TInvocationContextOptions : BaseInvocationContextOptions, new()
     {
@@ -23,25 +33,36 @@ namespace InvocationContext
             _defaultOptions = defaultOptions?.Value ?? new TInvocationContextOptions();
         }
 
+        public virtual async Task InvokeAsync(Func<IServiceProvider, Task> action, CancellationToken cancellation = default)
+        {
+            await InvokeAsync(_ => {  }, action, cancellation);
+        }
+
         public virtual async Task InvokeAsync(Action<TInvocationContextOptions>? optionsAction,
             Func<IServiceProvider, Task> action, CancellationToken cancellation = default)
         {
-            var options = _defaultOptions.Clone();
-            optionsAction?.Invoke((TInvocationContextOptions) options);
+            var options = _defaultOptions.Clone<TInvocationContextOptions>();
+            optionsAction?.Invoke(options);
 
+            await InvokeAsync(options, action, cancellation);
+        }
+
+        protected virtual async Task InvokeAsync(TInvocationContextOptions options,
+            Func<IServiceProvider, Task> action, CancellationToken cancellation = default)
+        {
             var contextData = _dataManager.InitializeContext();
 
             Exception? exceptionOnOnActionSuccess = null;
 
             try
             {
-                BeforeActionIvocation((TInvocationContextOptions) options);
+                BeforeActionIvocation(options, contextData);
                 try
                 {
                     Working = true;
                     await action.Invoke(contextData.ServiceProvider);
                     
-                    AfterActionSuccessfulInvocation((TInvocationContextOptions)options);
+                    AfterActionSuccessfulInvocation(options, contextData);
 
                     if (options.OnActionSuccessAsync is not null)
                     {
@@ -59,7 +80,7 @@ namespace InvocationContext
                 }
                 catch (Exception ex)
                 {
-                    OnActionException((TInvocationContextOptions) options);
+                    OnActionException(options, contextData);
 
                     _logger?.LogError(ex, "Error on invocation context");
                     if (exceptionOnOnActionSuccess is not null)
@@ -117,13 +138,13 @@ namespace InvocationContext
             }
         }
 
-        protected virtual void BeforeActionIvocation(TInvocationContextOptions options)
+        protected virtual void BeforeActionIvocation(TInvocationContextOptions options, InvocationContextData data)
         {
         }
-        protected virtual void AfterActionSuccessfulInvocation(TInvocationContextOptions options)
+        protected virtual void AfterActionSuccessfulInvocation(TInvocationContextOptions options, InvocationContextData data)
         {
         }
-        protected virtual void OnActionException(TInvocationContextOptions options)
+        protected virtual void OnActionException(TInvocationContextOptions options, InvocationContextData data)
         {
         }
     }
