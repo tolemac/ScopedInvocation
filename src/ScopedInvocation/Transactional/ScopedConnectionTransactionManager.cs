@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace InvocationContext.Transactional
+namespace ScopedInvocation.Transactional
 {
     public class ScopedConnectionTransactionManager<TConnection> : ITransactionManager
     where TConnection : IDbConnection
@@ -13,7 +13,7 @@ namespace InvocationContext.Transactional
             _connection = connection;
         }
 
-        public void StartTransaction(TransactionalInvocationContextOptions options, InvocationContextData data)
+        public void StartTransaction(TransactionalInvocationOptions options, ScoppedInvocationContext context)
         {
             _trans = _connection.BeginTransaction(options.IsolationLevel);
         }

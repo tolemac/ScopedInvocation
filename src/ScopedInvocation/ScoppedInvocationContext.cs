@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace InvocationContext
+namespace ScopedInvocation
 {
-    public class InvocationContextData
+    public class ScoppedInvocationContext
     {
         public IServiceProvider ServiceProvider { get; internal set; } = null!;
     }

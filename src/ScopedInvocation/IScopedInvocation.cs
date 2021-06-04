@@ -2,14 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace InvocationContext
+namespace ScopedInvocation
 {
-    public interface IInvocationContext
+    public interface IScopedInvocation
     {
         bool Working { get; }
 
         Task InvokeAsync(Func<IServiceProvider, Task> action, CancellationToken cancellation = default);
-        Task InvokeAsync(Action<BaseInvocationContextOptions>? optionsAction,
+        Task InvokeAsync(Action<BaseScopedInvocationOptions>? optionsAction,
             Func<IServiceProvider, Task> action, CancellationToken cancellation = default);
     }
 }

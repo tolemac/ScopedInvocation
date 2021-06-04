@@ -4,15 +4,15 @@ using System.Threading.Tasks;
 using Shouldly;
 using Xunit;
 
-namespace InvocationContext.Tests
+namespace ScopedInvocation.Tests
 {
-    public class BaseInvocationContextTests
+    public class BaseScopedInvocationTests
     {
         [Fact]
-        public async Task EventsAreLaunchedWhenCallThroughInvocationContext()
+        public async Task EventsAreLaunchedWhenCallThroughScopedInvocation()
         {
-            var dm = new InvocationContextDataManager();
-            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
+            var dm = new ScopedInvocationContextManager();
+            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
             var executionFlag = false;
             var successFlag = false;
             var completeFlag = false;
@@ -44,10 +44,10 @@ namespace InvocationContext.Tests
         }
 
         [Fact]
-        public async Task ExceptionEventsIsLaunchedWhenCallThroughInvocationContext()
+        public async Task ExceptionEventsIsLaunchedWhenCallThroughScopedInvocation()
         {
-            var dm = new InvocationContextDataManager();
-            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
+            var dm = new ScopedInvocationContextManager();
+            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
             var successFlag = false;
             var completeFlag = false;
             var actionExceptionFlag = false;
@@ -89,8 +89,8 @@ namespace InvocationContext.Tests
         [Fact]
         public async Task IfReturnFalseOnActionExceptionFuncTheInvocationNotThrowsAnyException()
         {
-            var dm = new InvocationContextDataManager();
-            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
+            var dm = new ScopedInvocationContextManager();
+            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
             var actionExceptionFlag = false;
             var invocationExceptionFlag = false;
 
@@ -114,8 +114,8 @@ namespace InvocationContext.Tests
         [Fact]
         public async Task WhenOnActionSuccessThorwsExceptionItThrowThroughInvocation()
         {
-            var dm = new InvocationContextDataManager();
-            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
+            var dm = new ScopedInvocationContextManager();
+            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
 
             (await Should.ThrowAsync<Exception>(async () =>
             {
@@ -129,8 +129,8 @@ namespace InvocationContext.Tests
         [Fact]
         public async Task WhenOnActionSuccessThrowsExceptionThrowsTheInvocationThrowsErrorAllwaisIncludeWhenOnActionExceptionSaysNotRethrow()
         {
-            var dm = new InvocationContextDataManager();
-            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
+            var dm = new ScopedInvocationContextManager();
+            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
 
             (await Should.ThrowAsync<Exception>(async () =>
             {
@@ -148,8 +148,8 @@ namespace InvocationContext.Tests
         [Fact]
         public async Task WhenOnActionExceptionThrowsTheInvocationThrowsAnAggregateExceptionWithBothExceptionsInnerAndOutter()
         {
-            var dm = new InvocationContextDataManager();
-            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
+            var dm = new ScopedInvocationContextManager();
+            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
 
             var ex = (await Should.ThrowAsync<Exception>(async () =>
             {
@@ -171,8 +171,8 @@ namespace InvocationContext.Tests
         [Fact]
         public async Task WhenOnCompleteThrowsTheInvocationThrowsTheException()
         {
-            var dm = new InvocationContextDataManager();
-            var ic = new BaseInvocationContext<BaseInvocationContextOptions>(dm, null, null);
+            var dm = new ScopedInvocationContextManager();
+            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
 
             (await Should.ThrowAsync<Exception>(async () =>
             {

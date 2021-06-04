@@ -2,18 +2,18 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace InvocationContext
+namespace ScopedInvocation
 {
-    public class BaseInvocationContextOptions
+    public class BaseScopedInvocationOptions
     {
         public Func<Exception, CancellationToken, Task<bool>>? OnActionExceptionAsync { get; set; }
         public Func<Exception, CancellationToken, Task>? OnInvocationException { get; set; }
         public Func<CancellationToken, Task>? OnActionSuccessAsync { get; set; }
         public Func<CancellationToken, Task>? OnCompleteAsync { get; set; }
 
-        public virtual BaseInvocationContextOptions Clone() => Clone<BaseInvocationContextOptions>();
+        public virtual BaseScopedInvocationOptions Clone() => Clone<BaseScopedInvocationOptions>();
 
-        public virtual T Clone<T>() where T : BaseInvocationContextOptions, new()
+        public virtual T Clone<T>() where T : BaseScopedInvocationOptions, new()
         {
             return new T
             {

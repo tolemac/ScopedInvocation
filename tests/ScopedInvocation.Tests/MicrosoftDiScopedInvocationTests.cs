@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
-using InvocationContext.MicrosoftDi;
 using Microsoft.Extensions.DependencyInjection;
+using ScopedInvocation.MicrosoftDi;
 using Shouldly;
 using Xunit;
 
-namespace InvocationContext.Tests
+namespace ScopedInvocation.Tests
 {
-    public class MicrosoftDiInvocationContextTests
+    public class MicrosoftDiScopedInvocationTests
     {
         [Fact]
         public async Task CanUseMicrosoftDi()
@@ -15,14 +15,14 @@ namespace InvocationContext.Tests
             sc.AddLogging();
             sc.AddOptions();
             
-            sc.AddMicrosoftDiInvocationContext();
+            sc.AddMicrosoftDiScopedInvocation();
             await using var sp = sc.BuildServiceProvider();
 
-            var ic = sp.GetService<IInvocationContext>();
-            ic.ShouldBeOfType<BaseInvocationContext>();
+            var ic = sp.GetService<IScopedInvocation>();
+            ic.ShouldBeOfType<BaseScopedInvocation>();
 
-            var manager = sp.GetService<IInvocationContextDataManager>();
-            manager.ShouldBeOfType<MicrosoftDiInvocationContextDataManager>();
+            var manager = sp.GetService<IScopedInvocationContextManager>();
+            manager.ShouldBeOfType<MicrosoftDiScopedInvocationContextManager>();
 
             var executionFlag = false;
 

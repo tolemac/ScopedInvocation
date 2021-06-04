@@ -2,18 +2,18 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace InvocationContext.Transactional
+namespace ScopedInvocation.Transactional
 {
     public interface ITransactionalInvocation
     {
         bool Working { get; }
 
         Task InvokeAsync(Func<IServiceProvider, Task> action, CancellationToken cancellation = default);
-        Task InvokeAsync(Action<TransactionalInvocationContextOptions>? optionsAction,
+        Task InvokeAsync(Action<TransactionalInvocationOptions>? optionsAction,
             Func<IServiceProvider, Task> action, CancellationToken cancellation = default);
 
         Task ReadOnlyInvokeAsync(Func<IServiceProvider, Task> action, CancellationToken cancellation = default);
-        Task ReadOnlyInvokeAsync(Action<TransactionalInvocationContextOptions>? optionsAction,
+        Task ReadOnlyInvokeAsync(Action<TransactionalInvocationOptions>? optionsAction,
             Func<IServiceProvider, Task> action, CancellationToken cancellation = default);
     }
 }

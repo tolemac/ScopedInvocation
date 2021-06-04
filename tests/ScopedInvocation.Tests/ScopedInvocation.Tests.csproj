@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\InvocationContext\InvocationContext.csproj" />
+    <ProjectReference Include="..\..\src\ScopedInvocation\ScopedInvocation.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,15 +1,15 @@
 ﻿using System.Data;
 
-namespace InvocationContext.Transactional
+namespace ScopedInvocation.Transactional
 {
-    public class TransactionalInvocationContextOptions : BaseInvocationContextOptions
+    public class TransactionalInvocationOptions : BaseScopedInvocationOptions
     {
         public bool ReadOnly { get; set; }
         public IsolationLevel IsolationLevel { get; set; }
 
-        public new TransactionalInvocationContextOptions Clone()
+        public new TransactionalInvocationOptions Clone()
         {
-            var result = Clone<TransactionalInvocationContextOptions>();
+            var result = Clone<TransactionalInvocationOptions>();
             result.ReadOnly = ReadOnly;
             result.IsolationLevel = IsolationLevel;
             return result;

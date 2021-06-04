@@ -4,33 +4,33 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace InvocationContext
+namespace ScopedInvocation
 {
-    public class BaseInvocationContext : BaseInvocationContext<BaseInvocationContextOptions>, IInvocationContext
+    public class BaseScopedInvocation : BaseScopedInvocation<BaseScopedInvocationOptions>, IScopedInvocation
     {
-        public BaseInvocationContext(IInvocationContextDataManager dataManager,
-            IOptions<BaseInvocationContextOptions>? defaultOptions,
-            ILogger<BaseInvocationContext<BaseInvocationContextOptions>>? logger)
-            : base(dataManager, defaultOptions, logger)
+        public BaseScopedInvocation(IScopedInvocationContextManager contextManager,
+            IOptions<BaseScopedInvocationOptions>? defaultOptions,
+            ILogger<BaseScopedInvocation<BaseScopedInvocationOptions>>? logger)
+            : base(contextManager, defaultOptions, logger)
         {
         }
     }
 
-    public class BaseInvocationContext<TInvocationContextOptions>  
-        where TInvocationContextOptions : BaseInvocationContextOptions, new()
+    public class BaseScopedInvocation<TScopedInvocationOptions>  
+        where TScopedInvocationOptions : BaseScopedInvocationOptions, new()
     {
-        private readonly IInvocationContextDataManager _dataManager;
+        private readonly IScopedInvocationContextManager _contextManager;
         private readonly ILogger? _logger;
-        private readonly TInvocationContextOptions _defaultOptions;
+        private readonly TScopedInvocationOptions _defaultOptions;
 
         public bool Working { get; private set; }
 
-        public BaseInvocationContext(IInvocationContextDataManager dataManager, 
-            IOptions<TInvocationContextOptions>? defaultOptions, ILogger<BaseInvocationContext<TInvocationContextOptions>>? logger)
+        public BaseScopedInvocation(IScopedInvocationContextManager contextManager, 
+            IOptions<TScopedInvocationOptions>? defaultOptions, ILogger<BaseScopedInvocation<TScopedInvocationOptions>>? logger)
         {
-            _dataManager = dataManager;
+            _contextManager = contextManager;
             _logger = logger;
-            _defaultOptions = defaultOptions?.Value ?? new TInvocationContextOptions();
+            _defaultOptions = defaultOptions?.Value ?? new TScopedInvocationOptions();
         }
 
         public virtual async Task InvokeAsync(Func<IServiceProvider, Task> action, CancellationToken cancellation = default)
@@ -38,31 +38,31 @@ namespace InvocationContext
             await InvokeAsync(_ => {  }, action, cancellation);
         }
 
-        public virtual async Task InvokeAsync(Action<TInvocationContextOptions>? optionsAction,
+        public virtual async Task InvokeAsync(Action<TScopedInvocationOptions>? optionsAction,
             Func<IServiceProvider, Task> action, CancellationToken cancellation = default)
         {
-            var options = _defaultOptions.Clone<TInvocationContextOptions>();
+            var options = _defaultOptions.Clone<TScopedInvocationOptions>();
             optionsAction?.Invoke(options);
 
             await InvokeAsync(options, action, cancellation);
         }
 
-        protected virtual async Task InvokeAsync(TInvocationContextOptions options,
+        protected virtual async Task InvokeAsync(TScopedInvocationOptions options,
             Func<IServiceProvider, Task> action, CancellationToken cancellation = default)
         {
-            var contextData = _dataManager.InitializeContext();
+            var context = _contextManager.InitializeScope();
 
             Exception? exceptionOnOnActionSuccess = null;
 
             try
             {
-                BeforeActionIvocation(options, contextData);
+                BeforeActionIvocation(options, context);
                 try
                 {
                     Working = true;
-                    await action.Invoke(contextData.ServiceProvider);
+                    await action.Invoke(context.ServiceProvider);
                     
-                    AfterActionSuccessfulInvocation(options, contextData);
+                    AfterActionSuccessfulInvocation(options, context);
 
                     if (options.OnActionSuccessAsync is not null)
                     {
@@ -80,9 +80,9 @@ namespace InvocationContext
                 }
                 catch (Exception ex)
                 {
-                    OnActionException(options, contextData);
+                    OnActionException(options, context);
 
-                    _logger?.LogError(ex, "Error on invocation context");
+                    _logger?.LogError(ex, "Error on scoped invocation");
                     if (exceptionOnOnActionSuccess is not null)
                         throw;
 
@@ -97,7 +97,7 @@ namespace InvocationContext
                         {
                             _logger?.LogError(innerEx, "Error calling OnActionExceptionAsync");
                             throw new AggregateException(
-                                "An error occurred calling OnActionExceptionAsync after a first error occurred on invocation context",
+                                "An error occurred calling OnActionExceptionAsync after a first error occurred on scoped invocation",
                                 ex, innerEx);
                         }
                     }
@@ -124,7 +124,7 @@ namespace InvocationContext
                     }
                     finally
                     {
-                        _dataManager.FinallizeContext(contextData);
+                        _contextManager.FinallizeScope(context);
                     }
                 }
             }
@@ -138,13 +138,13 @@ namespace InvocationContext
             }
         }
 
-        protected virtual void BeforeActionIvocation(TInvocationContextOptions options, InvocationContextData data)
+        protected virtual void BeforeActionIvocation(TScopedInvocationOptions options, ScoppedInvocationContext context)
         {
         }
-        protected virtual void AfterActionSuccessfulInvocation(TInvocationContextOptions options, InvocationContextData data)
+        protected virtual void AfterActionSuccessfulInvocation(TScopedInvocationOptions options, ScoppedInvocationContext context)
         {
         }
-        protected virtual void OnActionException(TInvocationContextOptions options, InvocationContextData data)
+        protected virtual void OnActionException(TScopedInvocationOptions options, ScoppedInvocationContext context)
         {
         }
     }

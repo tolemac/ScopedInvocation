@@ -1,8 +1,8 @@
-﻿using InvocationContext.Transactional;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using ScopedInvocation.Transactional;
 
-namespace InvocationContext.EntityFrameworkCore
+namespace ScopedInvocation.EntityFrameworkCore
 {
     public class ScopedDbContextTransactionManager<TDbContext> : ITransactionManager
         where TDbContext : DbContext
@@ -14,7 +14,7 @@ namespace InvocationContext.EntityFrameworkCore
         {
             _dbContext = dbContext;
         }
-        public void StartTransaction(TransactionalInvocationContextOptions options, InvocationContextData data)
+        public void StartTransaction(TransactionalInvocationOptions options, ScoppedInvocationContext context)
         {
             _trans = _dbContext.Database.BeginTransaction(options.IsolationLevel);
         }

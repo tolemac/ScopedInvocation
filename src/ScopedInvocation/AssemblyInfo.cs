@@ -18,4 +18,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("34cb7942-d2a4-4beb-9416-3eecc3835fce")]
 
 
-[assembly: InternalsVisibleTo("InvocationContext.Tests")]
+[assembly: InternalsVisibleTo("ScopedInvocation.Tests")]

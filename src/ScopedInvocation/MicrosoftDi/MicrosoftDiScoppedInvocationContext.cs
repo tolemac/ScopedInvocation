@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace InvocationContext.MicrosoftDi
+namespace ScopedInvocation.MicrosoftDi
 {
-    public class MicrosoftDiInvocationContextData : InvocationContextData
+    public class MicrosoftDiScoppedInvocationContext : ScoppedInvocationContext
     {
         public IServiceScope ServiceScope { get; internal set; } = null!;
     }
