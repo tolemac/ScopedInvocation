@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace InvocationContext.EntityFrameworkCore
 {
-    public class DbContextTransactionManager<TDbContext> : ITransactionManager
+    public class ScopedDbContextTransactionManager<TDbContext> : ITransactionManager
         where TDbContext : DbContext
     {
         private readonly TDbContext _dbContext;
         private IDbContextTransaction? _trans;
 
-        public DbContextTransactionManager(TDbContext dbContext)
+        public ScopedDbContextTransactionManager(TDbContext dbContext)
         {
             _dbContext = dbContext;
         }

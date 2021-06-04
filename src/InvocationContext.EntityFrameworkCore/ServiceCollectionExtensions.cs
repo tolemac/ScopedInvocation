@@ -10,7 +10,7 @@ namespace InvocationContext.EntityFrameworkCore
         {
             sc.AddScopedTransactionalInvocationContext();
 
-            sc.AddScoped<ITransactionManager, DbContextTransactionManager<TDbContext>>();
+            sc.AddScoped<ITransactionManager, ScopedDbContextTransactionManager<TDbContext>>();
         }
     }
 }
