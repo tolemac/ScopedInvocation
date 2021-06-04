@@ -9,180 +9,32 @@ namespace ScopedInvocation.Tests
     public class BaseScopedInvocationTests
     {
         [Fact]
-        public async Task EventsAreLaunchedWhenCallThroughScopedInvocation()
+        public async Task CanPerformCodeUsingScopedInvocation()
         {
-            var dm = new ScopedInvocationContextManager();
-            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
+            var cm = new ScopedInvocationContextManager();
+            var si = new BaseScopedInvocation<BaseScopedInvocationOptions>(cm, null, null);
             var executionFlag = false;
-            var successFlag = false;
-            var completeFlag = false;
-
-            ic.Working.ShouldBeFalse();
-            await ic.InvokeAsync(options =>
+            si.Working.ShouldBeFalse();
+            await si.InvokeAsync(sp =>
             {
-                options.OnActionSuccessAsync = token =>
-                {
-                    successFlag = true;
-                    return Task.CompletedTask;
-                };
-                options.OnCompleteAsync = token =>
-                {
-                    completeFlag = true;
-                    return Task.CompletedTask;
-                };
-            }, (sp) =>
-            {
-                ic.Working.ShouldBeTrue();
+                si.Working.ShouldBeTrue();
                 executionFlag = true;
                 return Task.CompletedTask;
             });
 
-            ic.Working.ShouldBeFalse();
+            si.Working.ShouldBeFalse();
             executionFlag.ShouldBeTrue();
-            successFlag.ShouldBeTrue();
-            completeFlag.ShouldBeTrue();
         }
 
         [Fact]
-        public async Task ExceptionEventsIsLaunchedWhenCallThroughScopedInvocation()
+        public async Task ScopedInvocationThorwsTheSameExceptionThatStopExecution()
         {
-            var dm = new ScopedInvocationContextManager();
-            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
-            var successFlag = false;
-            var completeFlag = false;
-            var actionExceptionFlag = false;
-            var invocationExceptionFlag = false;
-
+            var cm = new ScopedInvocationContextManager();
+            var si = new BaseScopedInvocation<BaseScopedInvocationOptions>(cm, null, null);
+            
             (await Should.ThrowAsync<Exception>(async () =>
             {
-                await ic.InvokeAsync(options =>
-                {
-                    options.OnActionSuccessAsync = token =>
-                    {
-                        successFlag = true;
-                        return Task.CompletedTask;
-                    };
-                    options.OnCompleteAsync = token =>
-                    {
-                        completeFlag = true;
-                        return Task.CompletedTask;
-                    };
-                    options.OnActionExceptionAsync = (ex, token) =>
-                    {
-                        actionExceptionFlag = true;
-                        return Task.FromResult(true);
-                    };
-                    options.OnInvocationException = (ex, token) =>
-                    {
-                        invocationExceptionFlag = true;
-                        return Task.CompletedTask;
-                    };
-                }, (sp) => throw new Exception("Test exception"));
-            })).Message.ShouldBe("Test exception");
-
-            successFlag.ShouldBeFalse();
-            completeFlag.ShouldBeTrue();
-            actionExceptionFlag.ShouldBeTrue();
-            invocationExceptionFlag.ShouldBeTrue();
-        }
-
-        [Fact]
-        public async Task IfReturnFalseOnActionExceptionFuncTheInvocationNotThrowsAnyException()
-        {
-            var dm = new ScopedInvocationContextManager();
-            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
-            var actionExceptionFlag = false;
-            var invocationExceptionFlag = false;
-
-            await Should.NotThrowAsync(async () =>
-            {
-                await ic.InvokeAsync(options =>
-                {
-                    options.OnActionExceptionAsync = (ex, token) =>
-                    {
-                        actionExceptionFlag = true;
-                        return Task.FromResult(false);
-                    };
-                    options.OnInvocationException = (ex, token) => throw new Exception("Not raised");
-                }, (sp) => throw new Exception("Test exception"));
-            });
-
-            actionExceptionFlag.ShouldBeTrue();
-            invocationExceptionFlag.ShouldBeFalse();
-        }
-
-        [Fact]
-        public async Task WhenOnActionSuccessThorwsExceptionItThrowThroughInvocation()
-        {
-            var dm = new ScopedInvocationContextManager();
-            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
-
-            (await Should.ThrowAsync<Exception>(async () =>
-            {
-                await ic.InvokeAsync(
-                    options => { options.OnActionSuccessAsync = token => throw new Exception("Test exception"); },
-                    (sp) => Task.CompletedTask
-                );
-            })).Message.ShouldBe("Test exception");
-        }
-
-        [Fact]
-        public async Task WhenOnActionSuccessThrowsExceptionThrowsTheInvocationThrowsErrorAllwaisIncludeWhenOnActionExceptionSaysNotRethrow()
-        {
-            var dm = new ScopedInvocationContextManager();
-            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
-
-            (await Should.ThrowAsync<Exception>(async () =>
-            {
-                await ic.InvokeAsync(
-                    options =>
-                    {
-                        options.OnActionSuccessAsync = token => throw new Exception("Test exception");
-                        options.OnActionExceptionAsync = (ex, token) => Task.FromResult(false);
-                    },
-                    (sp) => Task.CompletedTask
-                );
-            })).Message.ShouldBe("Test exception");
-        }
-
-        [Fact]
-        public async Task WhenOnActionExceptionThrowsTheInvocationThrowsAnAggregateExceptionWithBothExceptionsInnerAndOutter()
-        {
-            var dm = new ScopedInvocationContextManager();
-            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
-
-            var ex = (await Should.ThrowAsync<Exception>(async () =>
-            {
-                await ic.InvokeAsync(
-                    options =>
-                    {
-                        options.OnActionExceptionAsync = (_, token) =>
-                            throw new Exception("Test exception from OnActionException func");
-                    },
-                    (sp) => throw new Exception("Test exception")
-                );
-            })) as AggregateException;
-
-            ex.ShouldNotBeNull();
-            ex.InnerExceptions.First().Message.ShouldBe("Test exception");
-            ex.InnerExceptions.Last().Message.ShouldBe("Test exception from OnActionException func");
-        }
-
-        [Fact]
-        public async Task WhenOnCompleteThrowsTheInvocationThrowsTheException()
-        {
-            var dm = new ScopedInvocationContextManager();
-            var ic = new BaseScopedInvocation<BaseScopedInvocationOptions>(dm, null, null);
-
-            (await Should.ThrowAsync<Exception>(async () =>
-            {
-                await ic.InvokeAsync(
-                    options =>
-                    {
-                        options.OnCompleteAsync = token => throw new Exception("Test exception");
-                    },
-                    sp => Task.CompletedTask
-                );
+                await si.InvokeAsync(sp => throw new Exception("Test exception"));
             })).Message.ShouldBe("Test exception");
         }
     }

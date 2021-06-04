@@ -18,15 +18,15 @@ namespace ScopedInvocation.Tests
             sc.AddMicrosoftDiScopedInvocation();
             await using var sp = sc.BuildServiceProvider();
 
-            var ic = sp.GetService<IScopedInvocation>();
-            ic.ShouldBeOfType<BaseScopedInvocation>();
+            var si = sp.GetService<IScopedInvocation>();
+            si.ShouldBeOfType<BaseScopedInvocation>();
 
             var manager = sp.GetService<IScopedInvocationContextManager>();
             manager.ShouldBeOfType<MicrosoftDiScopedInvocationContextManager>();
 
             var executionFlag = false;
 
-            await ic.InvokeAsync(options => { },
+            await si.InvokeAsync(options => { },
                 sp =>
                 {
                     executionFlag = true;

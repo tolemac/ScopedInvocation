@@ -51,90 +51,26 @@ namespace ScopedInvocation
             Func<IServiceProvider, Task> action, CancellationToken cancellation = default)
         {
             var context = _contextManager.InitializeScope();
-
-            Exception? exceptionOnOnActionSuccess = null;
-
+            
+            BeforeActionIvocation(options, context);
             try
             {
-                BeforeActionIvocation(options, context);
-                try
-                {
-                    Working = true;
-                    await action.Invoke(context.ServiceProvider);
-                    
-                    AfterActionSuccessfulInvocation(options, context);
-
-                    if (options.OnActionSuccessAsync is not null)
-                    {
-                        try
-                        {
-                            await options.OnActionSuccessAsync.Invoke(cancellation);
-                        }
-                        catch (Exception ex)
-                        {
-                            exceptionOnOnActionSuccess = ex;
-                            _logger?.LogError(ex, "Error calling OnActionSuccessAsync");
-                            throw;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    OnActionException(options, context);
-
-                    _logger?.LogError(ex, "Error on scoped invocation");
-                    if (exceptionOnOnActionSuccess is not null)
-                        throw;
-
-                    var rethrow = true;
-                    if (options.OnActionExceptionAsync is not null)
-                    {
-                        try
-                        {
-                            rethrow = await options.OnActionExceptionAsync.Invoke(ex, cancellation);
-                        }
-                        catch (Exception innerEx)
-                        {
-                            _logger?.LogError(innerEx, "Error calling OnActionExceptionAsync");
-                            throw new AggregateException(
-                                "An error occurred calling OnActionExceptionAsync after a first error occurred on scoped invocation",
-                                ex, innerEx);
-                        }
-                    }
-
-                    if (rethrow)
-                    {
-                        throw;
-                    }
-                }
-                finally
-                {
-                    Working = false;
-                    try
-                    {
-                        if (options.OnCompleteAsync is not null)
-                        {
-                            await options.OnCompleteAsync.Invoke(cancellation);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger?.LogError(ex, "Error calling OnCompleteAsync");
-                        throw;
-                    }
-                    finally
-                    {
-                        _contextManager.FinallizeScope(context);
-                    }
-                }
+                Working = true;
+                await action.Invoke(context.ServiceProvider);
+                
+                AfterActionSuccessfulInvocation(options, context);
             }
-            catch (Exception outterException)
+            catch (Exception ex)
             {
-                if (options.OnInvocationException is not null)
-                {
-                    await options.OnInvocationException.Invoke(outterException, cancellation);
-                }
+                OnActionException(options, context);
+
+                _logger?.LogError(ex, "Error on scoped invocation");
                 throw;
+            }
+            finally
+            {
+                Working = false;
+                _contextManager.FinallizeScope(context);
             }
         }
 
