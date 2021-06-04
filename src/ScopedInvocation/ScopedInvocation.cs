@@ -6,9 +6,9 @@ using Microsoft.Extensions.Options;
 
 namespace ScopedInvocation
 {
-    public class BaseScopedInvocation : BaseScopedInvocation<BaseScopedInvocationOptions>, IScopedInvocation
+    internal class ScopedInvocation : BaseScopedInvocation<BaseScopedInvocationOptions>, IScopedInvocation
     {
-        public BaseScopedInvocation(IScopedInvocationContextManager contextManager,
+        public ScopedInvocation(IScopedInvocationContextManager contextManager,
             IOptions<BaseScopedInvocationOptions>? defaultOptions,
             ILogger<BaseScopedInvocation<BaseScopedInvocationOptions>>? logger)
             : base(contextManager, defaultOptions, logger)
@@ -16,7 +16,7 @@ namespace ScopedInvocation
         }
     }
 
-    public class BaseScopedInvocation<TScopedInvocationOptions>  
+    internal class BaseScopedInvocation<TScopedInvocationOptions>  
         where TScopedInvocationOptions : BaseScopedInvocationOptions, new()
     {
         private readonly IScopedInvocationContextManager _contextManager;

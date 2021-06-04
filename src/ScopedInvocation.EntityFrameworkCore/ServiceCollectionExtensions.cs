@@ -8,8 +8,7 @@ namespace ScopedInvocation.EntityFrameworkCore
     {
         public static void AddScopedDbContextTransactionalInvocation<TDbContext>(this IServiceCollection sc) where TDbContext : DbContext
         {
-            sc.AddScopedTransactionalScopedInvocation();
-
+            sc.AddScopedTransactionalInvocation();
             sc.AddScoped<ITransactionManager, ScopedDbContextTransactionManager<TDbContext>>();
         }
     }

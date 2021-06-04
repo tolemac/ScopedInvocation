@@ -12,9 +12,49 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Transactional\ScopedInvocation.Generated.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ScopedInvocation.Generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ScopedInvocation.tt</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ScopedInvocation.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ScopedInvocation.Generated.cs</LastGenOutput>
+    </None>
+    <None Update="Transactional\TransactionalInvocation.tt">
+      <LastGenOutput>TransactionalInvocation.Generated.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ScopedInvocation.Generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ScopedInvocation.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Transactional\TransactionalInvocation.Generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TransactionalInvocation.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

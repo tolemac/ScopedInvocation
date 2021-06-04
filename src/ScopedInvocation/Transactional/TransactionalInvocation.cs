@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace ScopedInvocation.Transactional
 {
-    public class TransactionalInvocation : BaseScopedInvocation<TransactionalInvocationOptions>, ITransactionalInvocation
+    internal class TransactionalInvocation : BaseScopedInvocation<TransactionalInvocationOptions>, ITransactionalInvocation
     {
         private readonly ITransactionManager _transactionManager;
 
