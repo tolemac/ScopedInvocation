@@ -1,30 +1,33 @@
 ﻿using System.Data;
-using Microsoft.Extensions.DependencyInjection;
+using ScopedInvocation;
 using ScopedInvocation.MicrosoftDi;
 using ScopedInvocation.Transactional;
 
-namespace ScopedInvocation
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddMicrosoftDiScopedInvocation(this IServiceCollection sc)
+        public static IServiceCollection AddMicrosoftDiScopedInvocation(this IServiceCollection sc)
         {
-            sc.AddSingleton<IScopedInvocation, ScopedInvocation>();
+            sc.AddSingleton<IScopedInvocation, ScopedInvocation.ScopedInvocation>();
             sc.AddScopedInvocationGenerics();
             sc.AddSingleton<IScopedInvocationContextManager, MicrosoftDiScopedInvocationContextManager>();
+            return sc;
         }
 
-        public static void AddScopedTransactionalInvocation(this IServiceCollection sc)
+        public static IServiceCollection AddScopedTransactionalInvocation(this IServiceCollection sc)
         {
             sc.AddScoped<ITransactionalInvocation, TransactionalInvocation>();
             sc.AddTransactionalInvocationGenerics();
+            return sc;
         }
 
-        public static void AddScopedConnectionTransactionalInvocation<TConnection>(this IServiceCollection sc) 
+        public static IServiceCollection AddScopedConnectionTransactionalInvocation<TConnection>(this IServiceCollection sc) 
             where TConnection : class, IDbConnection, new()
         {
             sc.AddScopedTransactionalInvocation();
             sc.AddScoped<ITransactionManager, ScopedConnectionTransactionManager<TConnection>>();
+            return sc;
         }
     }
 }
