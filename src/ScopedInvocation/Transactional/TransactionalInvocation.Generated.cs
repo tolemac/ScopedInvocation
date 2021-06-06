@@ -44,7 +44,7 @@ namespace ScopedInvocation.Transactional
 
         public Task InvokeAsync(Action<BaseScopedInvocationOptions>? options, Func<T1, CancellationToken, Task> action,
             CancellationToken cancellationToken = default) =>
-                base.InvokeAsync(options, async s => await action(s.GetRequiredService<T1>(), cancellationToken), cancellationToken);
+                base.InvokeAsync(options, async s => await action(s.GetRequiredService<T1>(), cancellationToken).ConfigureAwait(false), cancellationToken);
         
     }   
 
@@ -75,7 +75,7 @@ namespace ScopedInvocation.Transactional
 
         public Task InvokeAsync(Action<BaseScopedInvocationOptions>? options, Func<T1, T2, CancellationToken, Task> action,
             CancellationToken cancellationToken = default) =>
-                base.InvokeAsync(options, async s => await action(s.GetRequiredService<T1>(), s.GetRequiredService<T2>(), cancellationToken), cancellationToken);
+                base.InvokeAsync(options, async s => await action(s.GetRequiredService<T1>(), s.GetRequiredService<T2>(), cancellationToken).ConfigureAwait(false), cancellationToken);
         
     }   
 
@@ -107,7 +107,7 @@ namespace ScopedInvocation.Transactional
 
         public Task InvokeAsync(Action<BaseScopedInvocationOptions>? options, Func<T1, T2, T3, CancellationToken, Task> action,
             CancellationToken cancellationToken = default) =>
-                base.InvokeAsync(options, async s => await action(s.GetRequiredService<T1>(), s.GetRequiredService<T2>(), s.GetRequiredService<T3>(), cancellationToken), cancellationToken);
+                base.InvokeAsync(options, async s => await action(s.GetRequiredService<T1>(), s.GetRequiredService<T2>(), s.GetRequiredService<T3>(), cancellationToken).ConfigureAwait(false), cancellationToken);
         
     }   
 

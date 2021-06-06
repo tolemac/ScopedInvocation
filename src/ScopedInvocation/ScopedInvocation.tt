@@ -57,7 +57,7 @@ namespace ScopedInvocation
 
         public Task InvokeAsync(Action<BaseScopedInvocationOptions>? options, Func<<#= allTs #>, CancellationToken, Task> action,
             CancellationToken cancellationToken = default) =>
-                base.InvokeAsync(options, async s => await action(<#= allServices #>, cancellationToken), cancellationToken);
+                base.InvokeAsync(options, async s => await action(<#= allServices #>, cancellationToken).ConfigureAwait(false), cancellationToken);
         
     }   
 

@@ -35,7 +35,7 @@ namespace ScopedInvocation
 
         public virtual async Task InvokeAsync(Func<IServiceProvider, Task> action, CancellationToken cancellation = default)
         {
-            await InvokeAsync(_ => {  }, action, cancellation);
+            await InvokeAsync(_ => {  }, action, cancellation).ConfigureAwait(false);
         }
 
         public virtual async Task InvokeAsync(Action<TScopedInvocationOptions>? optionsAction,
@@ -44,7 +44,7 @@ namespace ScopedInvocation
             var options = _defaultOptions.Clone<TScopedInvocationOptions>();
             optionsAction?.Invoke(options);
 
-            await InvokeAsync(options, action, cancellation);
+            await InvokeAsync(options, action, cancellation).ConfigureAwait(false);
         }
 
         protected virtual async Task InvokeAsync(TScopedInvocationOptions options,
@@ -56,7 +56,7 @@ namespace ScopedInvocation
             try
             {
                 Working = true;
-                await action.Invoke(context.ServiceProvider);
+                await action.Invoke(context.ServiceProvider).ConfigureAwait(false);
                 
                 AfterActionSuccessfulInvocation(options, context);
             }
